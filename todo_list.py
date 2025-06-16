@@ -6,6 +6,8 @@ class TodoList:
 
     def addTask(self, task):
         self.tasks.append(task)
+        return task.id
+
 
     def printTask(self): # Since it is not in memory and in the db I need to pull from db first 
         if not self.tasks:
@@ -14,3 +16,10 @@ class TodoList:
 
         for i, task in enumerate(self.tasks, start = 1):
             print(f"Task {i}: \n{task}\n")
+
+
+    def getTask(self, task_id):
+        for task in self.tasks:
+            if task.id == int(task_id):
+                return task
+        return None

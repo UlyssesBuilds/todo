@@ -13,7 +13,8 @@ def load_db_on_boot(todoListObject):
     rows = db.get_all_task()
     for row in rows:
         # row format (id, title, due, description, isComplete)
-        task = Task(row[1], row[2], row[3], row[4])  # skip row[0] (id)
+        task = Task(row[1], row[2], row[3], row[4], row[0])  # row[0] (id)
+        # (self, title, due, description = None, isComplete = False, task_id= None
         todoListObject.addTask(task)
     return todoListObject
 
@@ -31,8 +32,9 @@ def index():
     overDueTask = []
     completedTask = []
 
+
     for task in todoListObject.tasks:            
-        if task.isCompleted: # checks first if done if not then it puts in todo
+        if task.isComplete: # checks first if done if not then it puts in todo
             completedTask.append(task)
         elif task.due >= today:  #use task.due to get date obj
             upComingTask.append(task)
@@ -41,7 +43,6 @@ def index():
         
 
     # sort    
-
 
     return render_template('index.html', upcoming = upComingTask, overDue= overDueTask, completed = completedTask)
     # this is what I am returning so I need to change it on HTML side
@@ -59,12 +60,34 @@ def userInput():
 
 
         task = Task(title, due, description) #no need to handle None
+        task.id = db.addTask(task)  # Save immediately to DB, returns ID (incremented)
         todoListObject.addTask(task) #save to memory; use the global variable
-        db.addTask(task)  # Save immediately to DB
 
         return redirect('/') #reloads index with new info essentially printing as well
     except Exception as e:  #didn't work? heres the error
         return f"Error: {e}"  
+
+@app.route('/completed', methods=['POST'])
+def completedTask():
+    try:  # to do something risky
+        # user inputs tasks. no need for while loop as when it redirect it serves a fresh page to resubmit for            
+
+        task_id  = int(request.form['task_id']) # I am passing back the task.id
+
+        # use todolist to find which task to change the isCompelted in SQL
+        task = todoListObject.getTask(task_id)
+
+        if task: # if not returned None which it shouldn't 
+            task.isComplete = True # add this to memory
+            db.updateCompletedTask(task.id) # changed in SQL
+
+
+        return redirect('/') #reloads and should be caught in the '/' route
+    except Exception as e:  
+        return f"Error: {e}"  
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
