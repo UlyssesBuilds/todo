@@ -1,0 +1,58 @@
+<!-- title = request.form['title'] # from HTML form field named "title"
+due = request.form['due']
+description = request.form ['description', None]  -->
+
+<!-- In HTML, a form is a section of a web page that allows users to input and submit data.
+It is defined by the <form> element and typically contains various interactive controls, 
+such as text fields, checkboxes, radio buttons, dropdowns, and submit buttons. -->
+
+
+<!-- name is backend logic, placeholder is whats displayed -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ToDo List</title>
+</head>
+<body>
+    <form action="/add" method="post">
+        <input type = "text" name="title" placeholder="Task title" required> 
+        <input type = "date" name="due" placeholder="Due date" required>  
+        <input type = "text" name="description" placeholder="Description"> 
+        <button type = "submit"> Add Task </button>
+    </form>
+
+    <h2>Upcoming Task</h2>
+    <ul>
+        {% for task in upcoming %}
+        <li>
+            {{task.title}} - Due {{task.due}} <br>
+            {{task.description}}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>PastDue Task</h2>
+    <ul>
+        {% for task in overDue %}
+        <li style="color: red;">
+            {{task.title}} - Due {{task.due}} <br>
+            {{task.description}}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Completed Task</h2>
+    <ul>
+        {% for task in completed%}
+        <li>
+            {{task.title}} - Due {{task.due}} <br>
+            {{task.description}}
+        </li>
+        {% endfor %}
+    </ul>
+
+
+</body>
+</html>
